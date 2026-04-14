@@ -13,6 +13,7 @@ const stickerOptions = [
 const videoConstraints = { width: 953, height: 599, facingMode: "user" };
 const SLOT_WIDTH = 900;
 const SLOT_HEIGHT = 550;
+const STICKER_MAX_SIZE = 600;
 
 
 export default function PhotoBooth() {
@@ -86,11 +87,11 @@ export default function PhotoBooth() {
         ctx.drawImage(frameImgRef.current, 0, 0, frameWidth, frameHeight);
 
         stickers.forEach((s, i) => {
-            ctx.drawImage(s.img, s.x, s.y, 200, 200);
+            ctx.drawImage(s.img, s.x, s.y, s.width, s.height);
             if (i === selectedSticker) {
                 ctx.strokeStyle = "#56b068";
                 ctx.lineWidth = 4;
-                ctx.strokeRect(s.x, s.y, 200, 200);
+                ctx.strokeRect(s.x, s.y, s.width, s.height);
             }
         });
     };
@@ -224,7 +225,7 @@ export default function PhotoBooth() {
         if (mode === "decorate") {
             for (let i = stickers.length - 1; i >= 0; i--) {
                 const s = stickers[i];
-                if (x >= s.x && x <= s.x + 150 && y >= s.y && y <= s.y + 150) {
+                if (x >= s.x && x <= s.x + s.width && y >= s.y && y <= s.y + s.height) {
                     setDraggingSticker(i);
                     setSelectedSticker(i);
                     setDragOffset({ x: x - s.x, y: y - s.y });
@@ -276,8 +277,13 @@ export default function PhotoBooth() {
     const addSticker = src => {
         const img = new Image();
         img.src = src;
-        img.onload = () =>
-            setStickers(s => [...s, { img, x: 400, y: 100 }]);
+        img.onload = () => {
+            const scale = Math.min(STICKER_MAX_SIZE / img.width, STICKER_MAX_SIZE / img.height);
+            const width = img.width * scale;
+            const height = img.height * scale;
+
+            setStickers(s => [...s, { img, x: 400, y: 100, width, height }]);
+        };
     };
 
     // delete Sticker

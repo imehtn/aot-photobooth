@@ -30,7 +30,7 @@ function App() {
           fontSize: "3.5rem",
           width: "100%"
         }}>
-          AttackOnTitan Booth
+          Attack On Titan PhotoBooth
         </h1> 
       </div>
 
